@@ -83,7 +83,7 @@ public class HttpResourceHolder {
         sb.append("Content-type: ").append(MimeTypeMapper.getType(f)).append("\r\n");
         sb.append("Content-Length: ").append(length).append("\r\n");
         sb.append("Last-Modified: ").append(SDFHolder.get().format(f.lastModified())).append("\r\n");
-        sb.append("Expires: Wed, 29 Dec 2010 10:50:22 EET").append("\r\n");
+//        sb.append("Expires: Wed, 29 Dec 2010 10:50:22 EET").append("\r\n"); // Hmmm
         sb.append("Cache-Control: max-age=604800, public, max-age=604800").append("\r\n");
         if(gzip)
             sb.append("Content-Encoding: gzip").append("\r\n");
