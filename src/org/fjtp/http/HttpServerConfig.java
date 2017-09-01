@@ -9,17 +9,17 @@ import org.fjtp.ServerConfig;
 public class HttpServerConfig extends ServerConfig {
     public boolean keepAlive = true;
     public boolean gzip = false;
-    public String htdocs;
-    public HttpDynamicKeyHandler dynamicHandler = new HttpDynamicKeyHandler() {
-        public boolean handle(HttpKeyHandler keyHandler) {
-            return false;
-        }
-    };
+//    public String htdocs;
+//    public HttpRequestHandler dynamicHandler = new HttpRequestHandler() {
+//        public boolean handle(HttpKeyHandler keyHandler) {
+//            return false;
+//        }
+//    };
+    public HttpRequestHandler handler;
     
     public Server<HttpServerConfig, HttpKeyHandler> startServer() throws IOException {
         HttpResponseHolder.init(this);
-        HttpResourceHolder.init(this, new File(this.htdocs));
-        
+
         return new Server<HttpServerConfig, HttpKeyHandler>(this, new HttpKeyHandlerFactory());
     }
 }

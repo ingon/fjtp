@@ -8,22 +8,29 @@ import java.util.Map;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 
-import org.fjtp.KeyHandler.Ops;
-import org.fjtp.http.HttpDynamicKeyHandler;
-import org.fjtp.http.HttpKeyHandler;
-import org.fjtp.http.HttpRequest;
-import org.fjtp.http.HttpServerConfig;
+import org.fjtp.http.*;
 import org.fjtp.util.AbstractPooledExecutor;
 
-public class HttpServletKeyHandler implements HttpDynamicKeyHandler {
+public class HttpServletKeyHandler implements HttpRequestHandler {
+    private static final HttpResponse LATER = new HttpResponse() {
+        @Override
+        public boolean isReady() {
+            return false;
+        }
+
+        @Override
+        public ByteBuffer buffer() {
+            return null;
+        }
+    };
+
     public final String basePath;
     public final HttpServlet servlet;
     
     private final AbstractPooledExecutor<HttpKeyHandler> handlers = new AbstractPooledExecutor<HttpKeyHandler>() {
         protected void perform(HttpKeyHandler t) {
             ByteBuffer data = doServe(t.getConfig(), t.getRequest());
-            t.setOutBuffer(data);
-            t.changeInterest(Ops.WRITE);
+            t.respond(new HttpResponse.Literal(data));
         }
     };    
     
@@ -40,17 +47,16 @@ public class HttpServletKeyHandler implements HttpDynamicKeyHandler {
         handlers.start(10); // XXX property
     }
 
-    public boolean handle(HttpKeyHandler keyHandler) {
-        HttpRequest request = keyHandler.getRequest();
-        
+    @Override
+    public HttpResponse handle(HttpKeyHandler keyHandler, HttpRequest request) {
         if(request.resource.startsWith(basePath)) {
-            handlers.enqueue(keyHandler);        
-            return true;
+            handlers.enqueue(keyHandler);
+            return LATER;
         } else {
-            return false;
+            return null;
         }
     }
-    
+
     protected ByteBuffer doServe(HttpServerConfig config, HttpRequest request) {
         XHttpServletRequest srequest = new XHttpServletRequest(request);
         XHttpServletResponse sresponse = new XHttpServletResponse();

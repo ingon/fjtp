@@ -4,9 +4,9 @@ import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
 
 public class HttpResponseHolder {
-    private static ByteBuffer notModified;
-    private static ByteBuffer notFound;
-    private static ByteBuffer badRequest;
+    private static HttpResponse notModified;
+    private static HttpResponse notFound;
+    private static HttpResponse badRequest;
     
     public static void init(HttpServerConfig config) {
         initNotModified(config);
@@ -14,16 +14,16 @@ public class HttpResponseHolder {
         initBadRequest(config);
     }
     
-    public static ByteBuffer getNotModified() {
-        return notModified.duplicate();
+    public static HttpResponse getNotModified() {
+        return notModified;
     }
     
-    public static ByteBuffer getBadRequest() {
-        return badRequest.duplicate();
+    public static HttpResponse getBadRequest() {
+        return badRequest;
     }
     
-    public static ByteBuffer getNotFound() {
-        return notFound.duplicate();
+    public static HttpResponse getNotFound() {
+        return notFound;
     }
     
     private static void initNotModified(HttpServerConfig config) {
@@ -36,7 +36,8 @@ public class HttpResponseHolder {
             sb.append("Connection: close").append("\r\n");
         sb.append("\r\n");
         
-        notModified = HttpKeyHandler.CHARSET.encode(CharBuffer.wrap(sb));
+        ByteBuffer buffer = HttpKeyHandler.CHARSET.encode(CharBuffer.wrap(sb));
+        notModified = new HttpResource(0, buffer);
     }
     
     private static void initNotFound(HttpServerConfig config) {
@@ -48,7 +49,8 @@ public class HttpResponseHolder {
             sb.append("Connection: close").append("\r\n");
         sb.append("\r\n");
         
-        notFound = HttpKeyHandler.CHARSET.encode(CharBuffer.wrap(sb));
+        ByteBuffer buffer = HttpKeyHandler.CHARSET.encode(CharBuffer.wrap(sb));
+        notFound = new HttpResource(0, buffer);
     }
 
     private static void initBadRequest(HttpServerConfig config) {
@@ -60,6 +62,7 @@ public class HttpResponseHolder {
             sb.append("Connection: close").append("\r\n");
         sb.append("\r\n");
         
-        badRequest = HttpKeyHandler.CHARSET.encode(CharBuffer.wrap(sb));
+        ByteBuffer buffer = HttpKeyHandler.CHARSET.encode(CharBuffer.wrap(sb));
+        badRequest = new HttpResource(0, buffer);
     }
 }

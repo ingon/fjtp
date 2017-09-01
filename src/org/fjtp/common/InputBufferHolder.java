@@ -3,7 +3,7 @@ package org.fjtp.common;
 import java.nio.ByteBuffer;
 
 public class InputBufferHolder {
-    private static final int BUFFER_SIZE = 4096;
+    private static final int BUFFER_SIZE = 16 * 1024;
     
     private static final ThreadLocal<ByteBuffer> LOCAL = new ThreadLocal<ByteBuffer>() {
         protected ByteBuffer initialValue() {
